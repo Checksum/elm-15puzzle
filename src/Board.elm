@@ -49,10 +49,10 @@ indexToPos : Int -> Pos
 indexToPos index =
     let
         row =
-            (index // size) - 1
+            index // size
 
         col =
-            remainderBy index size - 1
+            remainderBy size index
     in
     ( row, col )
 
@@ -64,21 +64,24 @@ defaultTiles =
 
 generator : Generator Board
 generator =
-    Random.map generateBoard (shuffle defaultTiles)
+    Random.map fromList (shuffle defaultTiles)
 
 
-generateBoard : List (Maybe Tile) -> Board
-generateBoard tiles =
+positions : List Pos
+positions =
     let
-        rows =
-            List.range 0 (size - 1)
+        rowPositions row =
+            List.map (pos row) (List.range 0 (size - 1))
 
-        cols =
-            List.range 0 (size - 1)
+        pos row column =
+            ( row, column )
+    in
+    List.concatMap rowPositions (List.range 0 (size - 1))
 
-        positions =
-            List.map2 Tuple.pair rows cols
 
+fromList : List (Maybe Tile) -> Board
+fromList tiles =
+    let
         emptyIndex =
             Maybe.withDefault 0 (elemIndex Nothing tiles)
 
@@ -95,6 +98,11 @@ toList : Board -> List (Maybe Tile)
 toList { board } =
     Dict.toList board
         |> List.map Tuple.second
+
+
+indexedMap2 : (Int -> a -> b -> c) -> List a -> List b -> List c
+indexedMap2 f a b =
+    List.map3 f (List.range 0 (List.length a - 1)) a b
 
 
 
@@ -114,7 +122,7 @@ isSolvable board =
 
         isEven : Int -> Bool
         isEven num =
-            remainderBy num 2 == 0
+            remainderBy 2 num == 0
 
         isOdd =
             not << isEven
@@ -123,7 +131,7 @@ isSolvable board =
         isEven inversions
 
     else
-        (isOdd emptyRow && isOdd inversions) || (isEven emptyRow && isEven inversions)
+        (isOdd emptyRow && isEven inversions) || (isEven emptyRow && isOdd inversions)
 
 
 
