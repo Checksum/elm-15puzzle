@@ -1,6 +1,15 @@
 {
-  "dependencies": {
+  "name": "elm-15puzzle",
+  "author": {
+    "name": "Srinath Sankar",
+    "email": "srinath@iambot.net"
+  },
+  "private": true,
+  "devDependencies": {
     "elm-format": "^0.8.3",
-    "elm-outdated": "^1.1.1"
+    "elm-test": "^0.19.1-revision2"
+  },
+  "scripts": {
+    "test": "elm-test"
   }
 }
