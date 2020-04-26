@@ -1,14 +1,14 @@
 module Main exposing (main)
 
 import Board exposing (Board)
-import Browser exposing (Document)
-import Html exposing (div)
+import Browser
+import Html exposing (Html, div, text)
 import Random
 
 
 main : Program () Model Msg
 main =
-    Browser.document
+    Browser.element
         { init = init
         , view = view
         , update = update
@@ -19,6 +19,7 @@ main =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { board = Board.emptyBoard
+      , initialised = False
       , title = "Elm 15"
       }
     , Random.generate BoardGenerated Board.generator
@@ -32,22 +33,30 @@ type Msg
 
 type alias Model =
     { board : Board
+    , initialised : Bool
     , title : String
     }
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        BoardGenerated board ->
+            if Board.isSolvable board then
+                ( { model | board = board, initialised = True }, Cmd.none )
+
+            else
+                ( model, Random.generate BoardGenerated Board.generator )
+
+        _ ->
+            ( model, Cmd.none )
 
 
-view : Model -> Document Msg
+view : Model -> Html Msg
 view model =
-    { title = model.title
-    , body = [ div [] [] ]
-    }
+    div [] []

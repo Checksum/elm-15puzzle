@@ -10,6 +10,8 @@
     "elm-test": "^0.19.1-revision2"
   },
   "scripts": {
+    "build:dev": "elm make src/Main.elm --debug --output dist/bundle.js",
+    "build": "elm make src/Main.elm --optimize --output dist/bundle.js",
     "test": "elm-test"
   }
 }
