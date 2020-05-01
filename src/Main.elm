@@ -4,6 +4,7 @@ import Board exposing (Board)
 import Browser
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Random
 
 
@@ -29,7 +30,7 @@ init _ =
 
 type Msg
     = BoardGenerated Board
-    | NoOp
+    | MoveTile Board.Pos
 
 
 type alias Model =
@@ -56,8 +57,10 @@ update msg model =
             else
                 ( model, Random.generate BoardGenerated Board.generator )
 
-        _ ->
-            ( model, Cmd.none )
+        MoveTile pos ->
+            ( { model | board = Board.move pos model.board }
+            , Cmd.none
+            )
 
 
 view : Model -> Html Msg
@@ -105,5 +108,6 @@ viewCell model ( pos, tile ) =
     in
     div
         [ class cssClass
+        , onClick (MoveTile pos)
         ]
         [ text cellNum ]

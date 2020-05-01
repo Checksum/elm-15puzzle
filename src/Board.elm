@@ -40,8 +40,8 @@ size =
 
 emptyBoard : Board
 emptyBoard =
-    { empty = ( 0, 0 )
-    , board = Dict.empty
+    { board = Dict.empty
+    , empty = ( 0, 0 )
     }
 
 
@@ -155,3 +155,79 @@ inversion index tile list =
     List.drop (index + 1) list
         |> List.filter (\i -> i < tile)
         |> List.length
+
+
+type Direction
+    = Up
+    | Down
+    | Left
+    | Right
+
+
+move : Pos -> Board -> Board
+move pos board =
+    if pos == board.empty then
+        board
+
+    else
+        case moveDirection pos board.empty of
+            -- Invalid move, do nothing
+            Nothing ->
+                board
+
+            -- If valid move, swap empty and tile positions
+            _ ->
+                Board (swap pos board.empty board.board) pos
+
+
+
+-- isAdjacent determines if a tile can be moved
+-- To be movable, the tile has to be in the same row or same column
+-- as the empty piece and should be previous or next tile in either
+-- direction
+-- Yea, ran into yet another elm compiler bug which hasn't been fixed in a year and half
+-- https://github.com/elm/compiler/issues/1773
+
+
+moveDirection : Pos -> Pos -> Maybe Direction
+moveDirection ( tileX, tileY ) ( emptyX, emptyY ) =
+    if tileX == emptyX then
+        let
+            diff =
+                tileY - emptyY
+        in
+        if diff == 1 then
+            Just Left
+
+        else if diff == -1 then
+            Just Right
+
+        else
+            Nothing
+
+    else if tileY == emptyY then
+        let
+            diff =
+                tileX - emptyX
+        in
+        if diff == 1 then
+            Just Up
+
+        else if diff == -1 then
+            Just Down
+
+        else
+            Nothing
+
+    else
+        Nothing
+
+
+swap : comparable -> comparable -> Dict comparable v -> Dict comparable v
+swap k1 k2 dict =
+    case ( Dict.get k1 dict, Dict.get k2 dict ) of
+        ( Just val1, Just val2 ) ->
+            Dict.insert k1 val2 (Dict.insert k2 val1 dict)
+
+        _ ->
+            dict
