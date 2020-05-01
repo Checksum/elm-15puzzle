@@ -41,6 +41,41 @@
             }
         }
     </style>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cell-size: 120px;
+        }
+
+        .board {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 5rem;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #d9d9d9;
+        }
+
+        .tile {
+            display: inline-flex;
+            width: var(--cell-size);
+            height: var(--cell-size);
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+            background-color: antiquewhite;
+            font-size: 2em;
+        }
+
+        .tile.empty {
+            background-color: white;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>

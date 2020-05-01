@@ -70,9 +70,11 @@ generator =
 positions : List Pos
 positions =
     let
+        rowPositions : Row -> List ( Row, Col )
         rowPositions row =
             List.map (pos row) (List.range 0 (size - 1))
 
+        pos : Row -> Col -> ( Row, Col )
         pos row column =
             ( row, column )
     in
@@ -94,15 +96,14 @@ fromList tiles =
     Board board emptyPosition
 
 
-toList : Board -> List (Maybe Tile)
+toList : Board -> List ( Pos, Maybe Tile )
 toList { board } =
     Dict.toList board
-        |> List.map Tuple.second
 
 
-indexedMap2 : (Int -> a -> b -> c) -> List a -> List b -> List c
-indexedMap2 f a b =
-    List.map3 f (List.range 0 (List.length a - 1)) a b
+toTileList : Board -> List (Maybe Tile)
+toTileList =
+    toList >> List.map Tuple.second
 
 
 
@@ -115,7 +116,7 @@ isSolvable : Board -> Bool
 isSolvable board =
     let
         inversions =
-            countInversions (toList board)
+            countInversions (toTileList board)
 
         emptyRow =
             Tuple.first board.empty

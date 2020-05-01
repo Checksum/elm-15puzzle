@@ -3,6 +3,7 @@ module Main exposing (main)
 import Board exposing (Board)
 import Browser
 import Html exposing (Html, div, text)
+import Html.Attributes exposing (..)
 import Random
 
 
@@ -48,7 +49,9 @@ update msg model =
     case msg of
         BoardGenerated board ->
             if Board.isSolvable board then
-                ( { model | board = board, initialised = True }, Cmd.none )
+                ( { model | board = board, initialised = True }
+                , Cmd.none
+                )
 
             else
                 ( model, Random.generate BoardGenerated Board.generator )
@@ -59,4 +62,48 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [] []
+    div [ class "container" ]
+        [ if not model.initialised then
+            div [] [ text "Generating board" ]
+
+          else
+            viewBoard model
+        ]
+
+
+viewBoard : Model -> Html Msg
+viewBoard model =
+    let
+        boardSize =
+            "calc(var(--cell-size) * " ++ String.fromInt Board.size ++ " + 2px)"
+
+        list =
+            Board.toList model.board
+    in
+    div [ class "board", style "width" boardSize, style "height" boardSize ] (List.map (viewCell model) list)
+
+
+viewCell : Model -> ( Board.Pos, Maybe Board.Tile ) -> Html Msg
+viewCell model ( pos, tile ) =
+    let
+        cellNum =
+            case tile of
+                Just n ->
+                    String.fromInt n
+
+                Nothing ->
+                    ""
+
+        cssClass =
+            "tile "
+                ++ (if pos == model.board.empty then
+                        "empty"
+
+                    else
+                        ""
+                   )
+    in
+    div
+        [ class cssClass
+        ]
+        [ text cellNum ]
