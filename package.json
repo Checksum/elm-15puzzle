@@ -11,12 +11,13 @@
     "uglify-js": "^3.9.1"
   },
   "scripts": {
-    "clean": "rm -rf docs",
-    "build:dev": "elm make src/Main.elm --debug --output docs/bundle.js",
-    "build": "elm make src/Main.elm --optimize --output docs/bundle.js",
-    "postbuild": "yarn compress",
+    "clean": "rm -rf dist && rm -rf docs",
+    "build:dev": "elm make src/Main.elm --debug --output dist/bundle.js",
+    "prebuild": "yarn clean",
+    "build": "elm make src/Main.elm --optimize --output dist/bundle.js",
+    "postbuild": "yarn compress && mkdir -p docs && cp -R index.html dist docs/",
     "start": "yarn build:dev && python3 -m http.server",
     "test": "elm-test",
-    "compress": "uglifyjs docs/bundle.js --compress 'pure_funcs=\"F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9\",pure_getters,keep_fargs=false,unsafe_comps,unsafe' | uglifyjs --mangle --output=docs/bundle.js"
+    "compress": "uglifyjs dist/bundle.js --compress 'pure_funcs=\"F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9\",pure_getters,keep_fargs=false,unsafe_comps,unsafe' | uglifyjs --mangle --output=dist/bundle.js"
   }
 }
